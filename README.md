@@ -1,35 +1,35 @@
 # Sound Mash Relay
 
-Приложение для двух Mac: первый захватывает системный звук и воспроизводит его локально с задержкой, второй получает поток по TCP и воспроизводит его по синхронизированным часам. AirPlay и SSH не используются.
+An application for two Macs: the first captures system audio and plays it locally with a delay; the second receives the stream over TCP and plays it using synchronized clocks. AirPlay and SSH are not used.
 
-## Требования
+## Requirements
 
-- macOS 14.2 или новее на обоих Mac; для сборки — Xcode или Command Line Tools со Swift.
-- Сетевое соединение, позволяющее второму Mac открыть TCP-порт 45987 первого. Одного общего доступа в интернет недостаточно: VPN, брандмауэр или изоляция клиентов могут блокировать соединение.
-- Разрешение на захват системного звука на первом Mac. Микрофон не используется.
+- macOS 14.2 or newer on both Macs; building requires Xcode or Command Line Tools with Swift.
+- A network connection that allows the second Mac to connect to TCP port 45987 on the first. Shared internet access alone is not enough: a VPN, firewall, or client isolation may block the connection.
+- Permission to capture system audio on the first Mac. The microphone is not used.
 
-## Безопасность
+## Security
 
-Поток **не шифруется и не защищён паролем**. Любой, кто может подключиться к порту 45987 первого Mac, может получить передаваемый звук; приёмник также не проверяет подлинность отправителя. Слушающий порт доступен на сетевых интерфейсах, не обязательно только в домашней сети. Используйте приложение только в доверенной сети и при допустимости такого использования по правилам обоих устройств. Остановите передачу после работы. Приложение не меняет настройки VPN или брандмауэра.
+The stream is **not encrypted or password-protected**. Anyone who can connect to port 45987 on the first Mac can receive the transmitted audio; the receiver does not authenticate the sender either. The listening port is accessible on network interfaces, not necessarily only on the home network. Use the application only on a trusted network and where this use is permitted by both devices' policies. Stop transmission when finished. The application does not change VPN or firewall settings.
 
-## Сборка и запуск
+## Building and Running
 
-На первом Mac в папке проекта выполните:
+On the first Mac, run the following in the project folder:
 
 ```sh
 ./build-app.sh
 ```
 
-Готовое приложение: `dist/Sound Mash Relay.app`. Скопируйте его на второй Mac удобным разрешённым способом. Сборка включает версии для Apple Silicon и Intel. Приложение подписывается локальной ad-hoc подписью, а не сертификатом Apple Developer: macOS или политика организации могут не разрешить его запуск.
+The built application is at `dist/Sound Mash Relay.app`. Copy it to the second Mac using a convenient, permitted method. The build includes Apple Silicon and Intel versions. The application is signed with a local ad-hoc signature, not an Apple Developer certificate: macOS or organizational policy may prevent it from running.
 
-1. Запустите приложение на обоих Mac.
-2. На первом нажмите «Начать передачу» и при запросе разрешите захват системного звука. На первом Mac отображаются IP-адреса его сетевых интерфейсов.
-3. На втором введите адрес первого Mac, доступный из сети второго, и нажмите «Подключиться». Если отображается несколько адресов, обычно нужен адрес домашней сети, а не VPN-интерфейса.
-4. Включите звук на первом Mac. При необходимости подстройте ползунок коррекции на втором, ориентируясь на слух.
-5. Нажмите «Остановить» на обоих Mac, чтобы прекратить передачу и восстановить обычное воспроизведение.
+1. Launch the application on both Macs.
+2. On the first, click “Start Transmission” and grant permission to capture system audio if prompted. The first Mac displays the IP addresses of its network interfaces.
+3. On the second, enter an address for the first Mac that is reachable from the second Mac's network, then click “Connect”. If several addresses are displayed, the home network address is usually needed, rather than the VPN interface address.
+4. Play audio on the first Mac. If necessary, adjust the correction slider on the second by ear.
+5. Click “Stop” on both Macs to stop transmission and restore normal playback.
 
-Общая буферизация добавляет около 600 мс задержки, поэтому звук может отставать от видео или реакции в игре. Приложение плавно корректирует дрейф и изменения настройки задержки, немного изменяя частоту аудиопотока; это может вызывать небольшие артефакты. Сетевые задержки и характеристики динамиков не позволяют гарантировать идеальную синхронность.
+Overall buffering adds about 600 ms of latency, so audio may lag behind video or game responses. The application smoothly corrects drift and changes to the delay setting by slightly adjusting the audio stream's sample rate; this may cause minor artifacts. Network latency and speaker characteristics mean perfect synchronization cannot be guaranteed.
 
-Отправитель объединяет небольшие аудиоблоки, чтобы уменьшить число сетевых отправок. Короткие пропуски захвата до 100 мс заполняются тишиной; при более длинном перерыве или недостаточно стабильном соединении сеанс останавливается вместо накопления задержки.
+The sender combines small audio blocks to reduce the number of network sends. Short capture gaps of up to 100 ms are filled with silence; a longer interruption or an insufficiently stable connection stops the session instead of allowing latency to build up.
 
-Защищённый контент может быть недоступен для захвата. Если соединение не устанавливается, проверьте выбранный адрес и разрешён ли TCP-порт 45987 между устройствами; не отключайте корпоративный VPN и не обходите ограничения организации.
+Protected content may not be available for capture. If the connection cannot be established, check the selected address and whether TCP port 45987 is allowed between the devices; do not disable a corporate VPN or bypass organizational restrictions.
