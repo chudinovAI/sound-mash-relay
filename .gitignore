@@ -1,0 +1,12 @@
+# SwiftPM and Xcode build products
+.build/
+.swiftpm/xcode/package.xcworkspace/xcuserdata/
+xcuserdata/
+*.xcuserstate
+DerivedData/
+build/
+dist/
+
+# Local caches and macOS metadata
+.cache/
+.DS_Store
